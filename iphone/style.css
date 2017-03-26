@@ -1,0 +1,46 @@
+body {
+    background-image: url("A4_materials/background.png");
+	background-repeat: no-repeat;
+	z-index:0;
+}
+
+.timeAndDate {
+  position: fixed;
+  left: 50px;
+  top: 80px;
+  text-align: center;
+  z-index: 0;
+  /*visibility: hidden;*/
+}
+
+table {
+  position: fixed;
+  left: 30px;
+  top: 200px;
+  padding: 0px;
+  border-spacing: 0px;
+  border-collapse: separate;
+  z-index:0;
+  
+}
+
+/*
+th,tr,td{
+	height: 64px;
+	width: 64px;
+	padding: 0px;
+}*/
+
+.homebutton{
+  position: fixed;
+  left: 120px;
+  top: 530px;
+  z-index:0;
+}
+
+.appscrn{
+	position: fixed;
+	left: 18px;
+	top: 73px;
+	z-index: 1;
+}

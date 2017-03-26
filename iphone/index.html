@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>iPhone Simulator</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body onload="PlaceApp();DisplayTime(); DisplayDate();">
+    <div id="screen">
+        <div class="statusbar" onload="DisplayDate(true); DisplayTime(true)">
+            <header class="timeAndDate">				<!--time and date-->
+                <h1 id="time"></h1>
+                <h3 id="date"></h1>
+			</header>
+		</div>
+		<div id="launcher" onload="PlaceApp()">
+			<div id="appscreen"></div>
+			
+			<table id="table">							<!--this table contents app-->
+				<tr>
+					<td id="00"></td>
+					<td id="01"></td>
+					<td id="02"></td>
+					<td id="03"></td>
+				</tr>
+				<tr>
+					<td id="10"></td>
+					<td id="11"></td>
+					<td id="12"></td>
+					<td id="13"></td>
+				</tr>
+				<tr>
+					<td id="20"></td>
+					<td id="21"></td>
+					<td id="22"></td>
+					<td id="23"></td>
+				</tr>
+				<tr>
+					<td id="30"></td>
+					<td id="31"></td>
+					<td id="32"></td>
+					<td id="33"></td>
+				</tr>
+				<tr>
+					<td id="40"></td>
+					<td id="41"></td>
+					<td id="42"></td>
+					<td id="43"></td>
+				</tr>
+			</table>
+			
+		</div>
+	</div>
+	<div class="homebutton">
+		<a href="javascript: PlaceApp()"><img src="A4_materials/homebutton.png"/>
+	</div>
+	<script type="text/javascript">
+		var sec=setInterval(function(){ DisplayTime() }, 1000);
+		function DisplayTime(){
+			var dateitem = new Date();
+			var time = dateitem.toLocaleTimeString();
+			document.getElementById('time').innerHTML = time;
+		}
+	</script>
+	<script type="text/javascript">
+		function DisplayDate(){
+			var dateitem = new Date();
+			var date = dateitem.toLocaleDateString();
+			document.getElementById('date').innerHTML = date;
+		}
+	</script>
+	<script type="text/javascript">
+		/*start of app objects*/
+		var pagesApp = {
+			name: "pages",
+			source:"A4_materials/pages.png",
+			x:0,
+			y:0,
+			updatePos : function(i,j) {
+				this.x=i;
+				this.y=j;
+			},
+			click : function showPages(){document.getElementById("screen").innerHTML="<img id=\"appscrn\" src=\"A4_materials/pages_appscreen.jpg\"/>"},
+			screen:"A4_materials/pages_appscreen.jpg",
+		};
+		var numbersApp = {
+			name: "numbers",
+			source:"A4_materials/numbers.png",
+			x:0,
+			y:1,
+			updatePos : function(i,j) {
+				this.x=i;
+				this.y=j;
+			},
+			click : function showNumbers(){document.getElementById("screen").innerHTML="<img id=\"appscrn\" src=\"A4_materials/numbers_appscreen.jpg\"/>"},
+			screen:"A4_materials/numbers_appscreen.jpg",
+		};
+		var musicApp = {
+			name: "music",
+			source:"A4_materials/music.png",
+			x:0,
+			y:2,
+			updatePos : function(i,j) {
+				this.x=i;
+				this.y=j;
+			},
+			click : function showMusic(){document.getElementById("screen").innerHTML="<img id=\"appscrn\" src=\"A4_materials/music_appscreen.jpg\"/>"},
+			screen:"A4_materials/music_appscreen.jpg",
+		};
+		var messagesApp = {
+			name: "messages",
+			source:"A4_materials/messages.png",
+			x:0,
+			y:3,
+			updatePos : function(i,j) {
+				this.x=i;
+				this.y=j;
+			},
+			screen:"A4_materials/messages_appscreen.jpg",
+		};
+		/*end of app objects*/
+		
+		var array=new Array(pagesApp,numbersApp,musicApp,messagesApp);			//array for the apps
+		function PlaceApp(){
+			document.getElementById('appscreen').style.visibility="hidden";		//hide any apps opened
+			document.getElementById('date').style.visibility="visible";			//show date
+			document.getElementById('time').style.visibility="visible";			//show time
+			document.getElementById('table').style.visibility="visible";		//show app launcher
+			
+			var screen=document.getElementById("launcher");
+			var table=document.getElementById("table");
+			var content="";
+			var txt="";
+			for(i=0;i<5;i++){
+				txt+="<tr>";
+				for(j=0;j<4;j++){
+					txt+="<td>";
+					var pos="c"+i.toString();
+					pos+=j.toString();
+					var cellcontent="<canvas id=\""+pos+"\"height=\"52\" width=\"52\"/>";
+					for	(index = 0; index < array.length; index++) {
+							if(i==array[index].x && j==array[index].y){
+								cellcontent="";
+								cellcontent+="<a href='javascript: open(\""+array[index].screen+"\")'>";
+								cellcontent+="<img id=\""+pos+"\" src=\""+array[index].source+"\" draggable=\"true\"/>";
+								break;
+							}
+					}
+					txt+=cellcontent;
+					txt+="</td>";
+				}
+				txt+="</tr>";
+			}
+			
+			table.innerHTML=txt;
+			registerDnD();
+		}
+		function registerDnD(){																		//register drag and drop events
+			for(row=0;row<5;row++){
+				for(col=0;col<4;col++){
+					var txt="c"+row.toString();
+					txt+=col.toString();
+					var cell=document.getElementById(txt);
+					
+					cell.addEventListener("dragstart", function(ev){
+						ev.dataTransfer.setData ("src", ev.target.id);
+					},false);
+					
+					cell.addEventListener("dragover", function(ev){
+						ev.preventDefault();
+					},false);
+					
+					cell.addEventListener("drop", function(ev){
+						ev.preventDefault ();
+						
+						var old_row=parseInt(ev.dataTransfer.getData("src")[1]);
+						var old_col=parseInt(ev.dataTransfer.getData("src")[2]);
+						
+						var new_row=parseInt(ev.target.id[1]);
+						var new_col=parseInt(ev.target.id[2]);
+						
+						var old_app;
+						var new_app;
+						
+						for(index=0;index<array.length;index++){								
+							if(old_row==array[index].x && old_col==array[index].y){
+								old_app=array[index];												//the app dragged
+								for(index2=0;index2<array.length;index2++){
+									if(new_row==array[index2].x && new_col==array[index2].y){
+										new_app=array[index2];										//the app dropped on
+									}
+								}
+							}
+						}
+						
+						if(new_app!=null) {															//dropped on another app
+							old_app.x=new_row;
+							old_app.y=new_col;
+							
+							new_app.x=old_row;
+							new_app.y=old_col;
+						}else{																		//dropped on empty slot
+							old_app.x=new_row;
+							old_app.y=new_col;
+						}
+						
+						PlaceApp();
+					},false);				
+				}
+			}
+		}
+	</script>
+	<script text="txt/javascript">
+		function open(url){																			//launch app
+			document.getElementById('time').style.visibility="hidden";
+			document.getElementById('date').style.visibility="hidden";
+			document.getElementById('table').style.visibility="hidden";
+			document.getElementById("appscreen").style.visibility="visible";
+			var launcher=document.getElementById("appscreen");
+			launcher.innerHTML='<img class=\"appscrn\" src=\"'+url+'\"/>';
+			
+		}
+	</script>
+</body>
+</html>
